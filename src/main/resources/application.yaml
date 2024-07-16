@@ -1,0 +1,15 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: forward-payment-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: postgres
+    password: admin123
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update

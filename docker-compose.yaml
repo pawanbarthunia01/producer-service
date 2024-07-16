@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  app:
+    container_name: forward-payment
+    image: 19811989/forward-payment:1.0.0
+    build: ./
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgresqldb
+      - kafka
+      - zookeeper
+    environment:
+        - spring.datasource.url=jdbc:postgresql://postgresqldb:5432/payment?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+        - spring.datasource.username=postgres
+        - spring.datasource.password=admin123
+    networks:
+      - myconn
+
+  postgresqldb:
+    image: postgres
+
+    environment:
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=payment
+    volumes:
+      - ./data:/var/lib/postgresql
+    ports:
+      - "5433:5432"
+    networks:
+      - myconn
+
+  zookeeper:
+    image: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - myconn
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.1.4
+      KAFKA_ZOOKEEPER_CONNECT: 192.168.1.4:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.1.4:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - myconn
+networks:
+  myconn:
